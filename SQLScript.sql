@@ -68,3 +68,23 @@ HAVING COUNT(DISTINCT product_category) IN
                 )
 ;
 ----------------------------------------------------------------------------------------------
+-- Add odd rows and even rows for each date; date type cast
+WITH CTE AS
+(SELECT 
+  DATE(measurement_time) as date_
+  , measurement_value
+  , ROW_NUMBER() OVER (
+      PARTITION BY DATE(measurement_time) 
+      ORDER BY measurement_time
+      )
+FROM measurements
+)
+SELECT 
+  date_
+  ,SUM(CASE WHEN row_number%2<>0 THEN measurement_value ELSE 0 END) odd_sum
+  ,SUM(CASE WHEN row_number%2=0 THEN measurement_value ELSE 0 END) even_sum
+FROM CTE
+GROUP BY date_
+;
+----------------------------------------------------------------------------------------------
+
