@@ -87,4 +87,43 @@ FROM CTE
 GROUP BY date_
 ;
 ----------------------------------------------------------------------------------------------
+-- Swap odd rows with even rows except the last row if it is odd
+WITH CTE AS
+(
+SELECT COUNT(DISTINCT order_id) total FROM orders 
+)
+SELECT 
+  CASE  WHEN order_id % 2 <> 0 THEN
+          CASE  WHEN order_id = total THEN order_id
+                ELSE order_id + 1
+                END
+        WHEN order_id % 2 = 0 THEN order_id-1
+        END AS corrected_order_id
+  ,item
+FROM orders 
+CROSS JOIN CTE
+ORDER BY corrected_order_id
+;
+----------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
