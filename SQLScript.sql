@@ -31,7 +31,7 @@ SELECT user_id, tweet_date
 FROM tweets
 ;
 ----------------------------------------------------------------------------------------------
--- Top 3 high salaries per department
+-- Top 3 high salaries per department -- multiple order by
 WITH CTE AS
 (
 SELECT 
@@ -41,18 +41,30 @@ SELECT
   , DENSE_RANK() 
       OVER (
             PARTITION BY dpt.department_id 
-            ORDER BY salary desc
+            ORDER BY salary DESC
             ) ranked
 FROM employee emp
 INNER JOIN department dpt
-  on emp.department_id = dpt.department_id
+  ON emp.department_id = dpt.department_id
 )
 SELECT 
   department_name
   ,name
   ,salary
 FROM CTE
-WHERE ranked in (1,2,3)
-order by department_name asc, salary desc, name asc
+WHERE ranked IN (1,2,3)
+ORDER BY department_name ASC, salary DESC, name ASC
+;
+----------------------------------------------------------------------------------------------
+-- Aggregate function, Subquery in Having
+SELECT customer_id
+FROM customer_contracts c
+JOIN products p
+ON   c.product_id = p.product_id
+GROUP BY customer_id
+HAVING COUNT(DISTINCT product_category) IN 
+          (SELECT COUNT(DISTINCT product_category) 
+                FROM products
+                )
 ;
 ----------------------------------------------------------------------------------------------
