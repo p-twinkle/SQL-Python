@@ -31,3 +31,28 @@ SELECT user_id, tweet_date
 FROM tweets
 ;
 ----------------------------------------------------------------------------------------------
+-- Top 3 high salaries per department
+WITH CTE AS
+(
+SELECT 
+  department_name
+  ,name
+  ,salary
+  , DENSE_RANK() 
+      OVER (
+            PARTITION BY dpt.department_id 
+            ORDER BY salary desc
+            ) ranked
+FROM employee emp
+INNER JOIN department dpt
+  on emp.department_id = dpt.department_id
+)
+SELECT 
+  department_name
+  ,name
+  ,salary
+FROM CTE
+WHERE ranked in (1,2,3)
+order by department_name asc, salary desc, name asc
+;
+----------------------------------------------------------------------------------------------
