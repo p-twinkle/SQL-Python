@@ -18,3 +18,13 @@ INNER JOIN product prod ON prod.id = itm.product_id
 GROUP BY c.city_name, prod.product_name
 ORDER BY SUM(line_total_price) DESC
 ;
+
+-- 3-day Rolling average:
+SELECT user_id, tweet_date
+, ROUND(AVG(tweet_count) OVER (
+        PARTITION BY user_id 
+        ORDER BY tweet_date
+        ROWS BETWEEN 2 PRECEDING AND CURRENT ROW
+        ) ,2) rolling_avg_3rd
+FROM tweets
+;
