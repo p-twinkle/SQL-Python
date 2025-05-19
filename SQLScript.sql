@@ -1,3 +1,15 @@
+/*
+ORDER OF EXECUTION
+- FROM (including JOIN) 
+– WHERE 
+– GROUP BY 
+– HAVING 
+– Window Functions 
+– SELECT 
+– DISTINCT 
+– ORDER BY 
+– LIMIT / FETCH / OFFSET
+*/
 ----------------------------------------------------------------------------------------------
 -- Median of a column 
 SELECT ROUND(PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY (colname)),4) AS Median
