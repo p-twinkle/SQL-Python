@@ -11,10 +11,86 @@ ORDER OF EXECUTION
 – LIMIT / FETCH / OFFSET
 */
 ----------------------------------------------------------------------------------------------
--- Median of a column 
+-- Median of a column  -- Version 1
 SELECT ROUND(PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY (colname)),4) AS Median
 FROM table_name
 ;
+
+/*
+1. PERCENTILE_CONT(p): for a fraction p, returns the continuous percentile at that fraction of your data
+2. WITHIN GROUP (ORDER BY col_name) FROM TABLE:  
+        - tells the engine to first order all the values in 'col_name' from table.
+        - then apply the percentile logic to that ordered list
+*/
+----------------------------------------------------------------------------------------------
+-- Median for searches if the table looks the following  -- Version 2
+/*
+| searches | num_users |
+| :------: | :--------: |
+|     1    |      2     |
+|     2    |      2     |
+|     3    |      3     |
+|     4    |      1     |
+*/
+-- First explode each row to get the ordered list and then use PERCENTILE_CONT()
+-- Solution:
+WITH EXPLODED AS
+(
+SELECT searches
+FROM search_frequency
+GROUP BY searches, generate_series(1, num_users)
+)
+SELECT PERCENTILE_CONT(0.50) WITHIN GROUP (ORDER BY searches)
+FROM EXPLODED
+;
+
+/*
+Understanding the generate_series() and CTE above:
+GENERATE_SERIES(START, STOP, STEP): Works like the range() in python
+*/
+-- Let's call the below EQ: Explosion Query
+SELECT 
+  searches,
+  num_users,
+  generate_series(1, num_users) AS gs
+FROM search_frequency;
+
+/*
+The query above created a column gs along side the OG table. 
+For each row in OG table, generate_series(1, num_users), duplicates the corresponding 'searches' value with a frequency of 'num_users'.
+Almost like doing a lateral join. 
+
+This OG table: 
+| searches | num_users |
+| :------: | :--------: |
+|     1    |      2     | -- Let's look at this row alone. In our exploded list, 1 should have the frequency of 2. Hence, gs(1, num_users)
+|     2    |      2     |
+|     3    |      3     |
+|     4    |      1     |
+
+Now looks like:
+
+| searches | num_users |  gs |
+| :------: | :--------: | :-: |
+|     1    |      2     |  1  | - gs(1, num_users) = [1, 2], appended to first row ...
+|     1    |      2     |  2  | - ...twice, making freq(1) in searches 2. 
+|     2    |      2     |  1  |
+|     2    |      2     |  2  |
+|     3    |      3     |  1  |
+|     3    |      3     |  2  |
+|     3    |      3     |  3  |
+|     4    |      1     |  1  |
+
+All we need is to retain this 'searches' column. Either use the EQ mentioned above in a subquery to get what we need, 
+OR group by (searches, gs) and SELECT searches. 
+
+Why this works: gs is distinct for each repeating 'search' value
+*/
+
+-- optimised EQ
+SELECT searches
+FROM search_frequency
+GROUP BY searches, generate_series(1, num_users)
 ----------------------------------------------------------------------------------------------
 -- Assign Row Number 
 SELECT ROW_NUMBER() OVER (ORDER BY colname) AS ROW_NUM
