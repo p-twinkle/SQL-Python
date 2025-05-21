@@ -41,13 +41,46 @@ def fizz_buzz_sum(target):
   return sum(ls)
   
 # --------------------------------------------------------------------------------------------------------
+# Check if input list contains duplicates
+def contains_duplicate(input)-> bool:
+  return len(input) != len(set(input))
 
+# --------------------------------------------------------------------------------------------------------
+# Anagram
 
+s = "listen"
+t = "silent"
 
+# Solution 1 
+from collections import Counter
+def is_anagram(s, t):
+  ds = Counter(list(s))
+  dt = Counter(list(t))
+  return sorted(ds) == sorted(dt)
 
+# Solution 2
+def is_anagram(s, t):
+    ds = {}
+    for i in list(s):
+        ds[i] = ds.get(i, 0) + 1
+    dt = {}
+    for i in list(t):
+        dt[i] = dt.get(i, 0) + 1
+        
+    return sorted(ds) == sorted(dt)
 
+is_anagram(s, t)
+# --------------------------------------------------------------------------------------------------------
+# Palindrome
+phrase = "Taco cat."
 
-
+def isPalindrome(phrase):
+    clean = [i.lower() for i in list(phrase) if i.isalnum()]
+    rev = clean[::-1]
+    return clean == rev
+  
+isPalindrome(phrase)
+# --------------------------------------------------------------------------------------------------------
 
 
 
