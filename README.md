@@ -1,3 +1,3 @@
-# SQL
+# SQL & Python
 
-A space to collate resources on SQL
+A space to collate resources on SQL & Python
