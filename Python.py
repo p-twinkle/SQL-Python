@@ -81,10 +81,52 @@ def isPalindrome(phrase):
   
 isPalindrome(phrase)
 # --------------------------------------------------------------------------------------------------------
+# Longest consecutive
+nums = [100, 4, 200, 1, 3, 2]
 
+def longest_consecutive(nums):
+    num = sorted(nums)
+    seq = []
+    for i in range(len(num)-1):
+        if (num[i+1]- num[i]) == 1:
+            seq.append(num[i])
+            seq.append(num[i+1])
+    return len(set(seq))
+longest_consecutive(nums)
+# --------------------------------------------------------------------------------------------------------
+# Length of longest substring - Sliding window
+def lengthOfLongestSubstring(self, s):
+        """
+        :type s: str
+        :rtype: int
+        """
+        seen = set() 
+        left = 0
+        max_len = 0
+        for right in range(len(s)):
+            while s[right] in seen:
+                seen.remove(s[left])
+                left += 1
+            seen.add(s[right])
+            max_len = max(max_len,(right - left + 1))
+        return max_len
+# --------------------------------------------------------------------------------------------------------
+# Roman to Integer
+d = {'I': 1, 'V': 5, 'X': 10, 'L': 50, 'C': 100, 'D': 500, 'M': 1000}
 
-
-
+ip = 'MCMXCIV'
+int_ls = [d[roman] for roman in list(ip)]
+num = 0
+prev = 0
+for i in reversed(int_ls):
+    curr = i
+    if prev > curr:
+        num -= curr
+    else:
+        num += curr
+    prev = curr
+print(num)
+# --------------------------------------------------------------------------------------------------------
 
 
 
