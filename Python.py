@@ -127,11 +127,22 @@ for i in reversed(int_ls):
     prev = curr
 print(num)
 # --------------------------------------------------------------------------------------------------------
+# Pangram
+def is_pangram(s):
+    ls = {c.lower() for c in s if c.isalpha()}
+    return len(ls) == 26
 
+is_pangram("The quick brown fox jumps over a lazy dog")
+# --------------------------------------------------------------------------------------------------------
+# Write a function that removes consecutive duplicates from a list.
 
+def remove_consecutive_duplicates(ls):
+    op = [ls[0]]
+    op += [ls[i] for i in range(1,len(ls)) if ls[i] != ls[i-1]]
+    return op
 
-
-
+remove_consecutive_duplicates([1, 2, 2, 3, 3, 3, 4])
+# --------------------------------------------------------------------------------------------------------
 
 
 
