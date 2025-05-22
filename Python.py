@@ -156,6 +156,17 @@ def group_by_length(word_ls):
 group_by_length(["cat", "dog", "elephant", "bat"])
 # Output: {3: ['cat', 'dog', 'bat'], 8: ['elephant']}
 # --------------------------------------------------------------------------------------------------------
+# Top k most frequent words, sorted by frequency (descending), and alphabetically if frequencies match.
 
+words_ls = ["i", "love", "leetcode", "i", "love", "coding"]
+k = 2
 
+def top_k_frequent_words(words_ls,k):
+    d = {}
+    for word in words_ls:
+        d[word] = d.get(word, 0) + 1
+    sorted_words = sorted(d.items(), key = lambda x: (-x[1], x[0]))                    
+    return [w for w,c in sorted_words[:k]]
+top_k_frequent_words(words_ls, k)
 
+# --------------------------------------------------------------------------------------------------------
