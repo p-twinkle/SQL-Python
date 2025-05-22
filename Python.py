@@ -143,7 +143,19 @@ def remove_consecutive_duplicates(ls):
 
 remove_consecutive_duplicates([1, 2, 2, 3, 3, 3, 4])
 # --------------------------------------------------------------------------------------------------------
+def group_by_length(word_ls):
+    d = {}
+    for word in word_ls:
+        if len(word) in d.keys():
+            val_to_update = d[len(word)] 
+            val_to_update.append(word)
+        else:
+            d[len(word)] = [word]
+    return d
 
+group_by_length(["cat", "dog", "elephant", "bat"])
+# Output: {3: ['cat', 'dog', 'bat'], 8: ['elephant']}
+# --------------------------------------------------------------------------------------------------------
 
 
 
