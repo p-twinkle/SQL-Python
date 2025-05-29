@@ -193,7 +193,20 @@ CROSS JOIN CTE
 ORDER BY corrected_order_id
 ;
 ----------------------------------------------------------------------------------------------
-
+-- COALESCE(column A, column B) = Takes value from the column that is not null
+SELECT 
+  COALESCE(ad.user_id, dp.user_id) user_id
+  , CASE 
+    WHEN dp.user_id IS NULL THEN 'CHURN'
+    WHEN dp.user_id IS NOT NULL AND ad.status = 'CHURN' THEN 'RESURRECT'
+    WHEN dp.user_id IS NOT NULL AND ad.status != 'CHURN' THEN 'EXISTING'
+    WHEN ad.user_id IS NULL AND dp.user_id IS NOT NULL THEN 'NEW'
+    END new_status
+FROM advertiser ad 
+FULL JOIN daily_pay dp 
+ON ad.user_id = dp.user_id 
+ORDER BY COALESCE(ad.user_id, dp.user_id)
+;
 
 
 
