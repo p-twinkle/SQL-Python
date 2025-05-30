@@ -186,3 +186,23 @@ class Solution(object):
 
 sol_instance = Solution()
 sol_instance.longestCommonPrefix(strs)
+
+# --------------------------------------------------------------------------------------------------------
+# Valid Parenthesis
+# Look at the string I/P, if we encounter a closed bracket, I look for its corresponding open bracket in the stack.
+# And remove them from the stack. At the end, is the stack is empty, then it's a valid parenthesis.
+
+class Solution(object):
+    def isValid(self, s):
+        map_dict = {']':'[', ')':'(', '}':'{'}
+        stack = []
+        for c in s:
+            if c in map_dict.keys():
+                if stack and (stack[-1] == map_dict[c]):
+                    stack.pop()
+            else:
+                stack.append(c)
+        return len(stack)==0
+                
+sol_instance = Solution()
+sol_instance.isValid("](){}")
