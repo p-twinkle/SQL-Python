@@ -198,15 +198,55 @@ class Solution(object):
         stack = []
         for c in s:
             if c in map_dict.keys(): # if it's a closing bracket, corresponding open should be in stack
-                if len(stack) == 0: # if stack empty
+                if len(stack) == 0 or map_dict[c] not in stack: # if stack empty
                     return False
                 elif map_dict[c] in stack and map_dict[c] == stack[-1]: #corr open in stack & same as last entry
                     stack.pop() # remove that open from stack
             else:  # if it's an open bracket, just add to stack
                 stack.append(c)
         return len(stack) == 0
+    
+  def isValid_optimised(self, s):
+      
                 
 sol_instance = Solution()
 sol_instance.isValid("{}[]")
 # --------------------------------------------------------------------------------------------------------
+# Finding the index of 'needle' string in the 'haystack' string
+class Solution(object):
+    def strStr(self, haystack, needle):
+        if needle == haystack:
+            return 0
+        elif needle in haystack:
+            window_len = len(needle) 
+            for i in range(len(haystack)-window_len+1):
+                if haystack[i:i+window_len] == needle:
+                    return i
+        return -1
+
+sol_instance = Solution()
+sol_instance.strStr(haystack = 'abc', needle = 'c')
+# --------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
