@@ -170,3 +170,19 @@ def top_k_frequent_words(words_ls,k):
 top_k_frequent_words(words_ls, k)
 
 # --------------------------------------------------------------------------------------------------------
+# Find common prefix
+strs = ["flower","flow","flight"]
+
+class Solution(object):
+    def longestCommonPrefix(self, strs):
+        sorted_ls = sorted(strs, key = len)
+        saved = sorted_ls[0]
+        common_prefix = saved 
+        for idx in reversed(range(len(saved))):
+            for word in sorted_ls[1:]:
+                if word[idx]!=saved[idx]:
+                    common_prefix = common_prefix[:idx]
+        return common_prefix
+
+sol_instance = Solution()
+sol_instance.longestCommonPrefix(strs)
