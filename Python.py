@@ -227,6 +227,47 @@ class Solution(object):
 sol_instance = Solution()
 sol_instance.strStr(haystack = 'abc', needle = 'c')
 # --------------------------------------------------------------------------------------------------------
+# Get alphabet order
+
+# Convert s into an integer by replacing each letter with its position in the alphabet (i.e. replace 'a' with 1, 'b' with 2, ..., 'z' with 26).
+# Transform the integer by replacing it with the sum of its digits.
+# Repeat the transform operation (step 2) k times in total.
+# Example 1:
+# Input: s = "iiii", k = 1 # Output: 36
+# Explanation:
+# - Convert: "iiii" ➝ "(9)(9)(9)(9)" ➝ "9999" ➝ 9999
+# - Transform #1: 9999 ➝ 9 + 9 + 9 + 9 ➝ 36
+# Thus the resulting integer is 36.
+
+# Used ord() to get the alphabet index; ord('a') = 97
+class Solution(object):
+    def getLucky(self, s, k):
+        ls = ''.join(str(ord(c) - ord('a') + 1) for c in s)
+
+        for _ in range(k):
+            ls = str(sum(int(d) for d in ls))
+
+        return int(ls)
+            
+sol_instance = Solution()
+sol_instance.getLucky(s='iiii', k=2)     
+# --------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
