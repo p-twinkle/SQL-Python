@@ -197,12 +197,16 @@ class Solution(object):
         map_dict = {']':'[', ')':'(', '}':'{'}
         stack = []
         for c in s:
-            if c in map_dict.keys():
-                if stack and (stack[-1] == map_dict[c]):
-                    stack.pop()
-            else:
+            if c in map_dict.keys(): # if it's a closing bracket, corresponding open should be in stack
+                if len(stack) == 0: # if stack empty
+                    return False
+                elif map_dict[c] in stack and map_dict[c] == stack[-1]: #corr open in stack & same as last entry
+                    stack.pop() # remove that open from stack
+            else:  # if it's an open bracket, just add to stack
                 stack.append(c)
-        return len(stack)==0
+        return len(stack) == 0
                 
 sol_instance = Solution()
-sol_instance.isValid("](){}")
+sol_instance.isValid("{}[]")
+# --------------------------------------------------------------------------------------------------------
+
