@@ -252,7 +252,21 @@ class Solution(object):
 sol_instance = Solution()
 sol_instance.getLucky(s='iiii', k=2)     
 # --------------------------------------------------------------------------------------------------------
+# Flatten Nested Lists
+ip = [1,34, ['a', 'b', [9, 0]], 'z']
 
+def flatten_ls(ls):
+    ret = []
+    for i in ls:
+        if isinstance(i, list):
+            ret += flatten_ls(i)
+        else:
+            ret.append(i)
+    return ret
+
+result = flatten_ls(ip)
+print(result)
+# --------------------------------------------------------------------------------------------------------
 
 
 
