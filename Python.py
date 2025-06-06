@@ -266,8 +266,27 @@ def flatten_ls(ls):
 
 result = flatten_ls(ip)
 print(result)
-# --------------------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------------------------------
+# Decorator, Wrapper Function -- Used to make other functions do something extra without modifying the base code. 
+# Used for logging
 
+import time
+
+def timer(func):
+    def wrapper():
+        start = time.time()
+        func()
+        end = time.time()
+        print(f"Time taken: {end - start:.4f}s")
+    return wrapper
+
+@timer
+def slow_function():
+    time.sleep(1)
+    print("Done!")
+
+slow_function()
+# --------------------------------------------------------------------------------------------------------------
 
 
 
