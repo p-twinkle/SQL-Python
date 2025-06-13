@@ -207,10 +207,65 @@ FULL JOIN daily_pay dp
 ON ad.user_id = dp.user_id 
 ORDER BY COALESCE(ad.user_id, dp.user_id)
 ;
+----------------------------------------------------------------------------------------------
+-- Provided a table with user id and the dates they visited the platform, 
+-- find the top 3 users with the longest continuous streak of visiting the platform as of August 10, 2022. 
+-- Output the user ID and the length of the streak. In case of a tie, display all users with the top three longest streaks.
 
 
+WITH 
+VISITS AS
+(
+(SELECT DISTINCT * FROM user_streaks WHERE date_visited <= '2022-08-10')
+)
 
+, FLAG AS
+(
+SELECT 
+user_id
+, date_visited
+, LAG(date_visited, 1) OVER (PARTITION BY user_id ORDER BY date_visited) prev_date
+, CASE WHEN date_visited - LAG(date_visited, 1) OVER (
+                                PARTITION BY user_id 
+                                ORDER BY date_visited) = 1 
+        THEN 0 
+        ELSE 1 
+        END AS is_new_streak
+FROM VISITS
+)
 
+, STREAK_NEW AS
+(
+SELECT user_id, date_visited, is_new_streak
+, SUM(is_new_streak) OVER (PARTITION BY user_id ORDER BY date_visited) STREAK_ID
+FROM FLAG
+)
+
+, STREAK_LEN as
+(
+SELECT user_id, streak_id, COUNT(*) streak_length
+FROM STREAK_NEW
+GROUP BY user_id, streak_id
+)
+
+, MAX_STREAK AS
+(
+SELECT user_id, MAX(streak_length) max_streak
+FROM STREAK_LEN 
+GROUP BY user_id
+)
+
+, STREAK_RANKED AS
+(
+SELECT user_id, max_streak,
+RANK() OVER(ORDER BY max_streak DESC) streak_rank 
+FROM MAX_STREAK
+)
+
+SELECT user_id, max_streak
+FROM STREAK_RANKED 
+WHERE streak_rank <= 3
+;
 
 
 
