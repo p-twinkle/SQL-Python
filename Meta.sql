@@ -1,5 +1,8 @@
-----------------------------------------------------------------------------------------------
--- Return the total number of posts made on each calendar day of the month, aggregated across all months and years (ignoring user and year).
+-- SQL concepts for Interview Prep, questions and concepts sourced from Leetcode, Data Lemur & StrataScratch
+
+-------------------------------------------------------------------------------------------------------------------
+-- 1. 
+    -- Return the total number of posts made on each calendar day of the month, aggregated across all months and years (ignoring user and year).
 
 WITH ALL_DAYS_SERIES AS
 (
@@ -15,10 +18,11 @@ LEFT JOIN
     )
 on ALL_DAYS = DAYS
 
-----------------------------------------------------------------------------------------------
--- Provided a table with user id and the dates they visited the platform, 
--- find the top 3 users with the longest continuous streak of visiting the platform as of August 10, 2022. 
--- Output the user ID and the length of the streak. In case of a tie, display all users with the top three longest streaks.
+-------------------------------------------------------------------------------------------------------------------
+-- 2. 
+    -- Provided a table with user id and the dates they visited the platform, 
+    -- find the top 3 users with the longest continuous streak of visiting the platform as of August 10, 2022. 
+    -- Output the user ID and the length of the streak. In case of a tie, display all users with the top three longest streaks.
 
 
 WITH 
@@ -75,7 +79,7 @@ FROM STREAK_RANKED
 WHERE streak_rank <= 3
 ;
 
--- Version 2 : (Mine)
+-- Version 2
 
 WITH VISITS AS
 (
@@ -121,12 +125,14 @@ SELECT user_id, STREAK_LEN
 FROM STREAK_RANKED
 WHERE STREAK_RANK <= 3
 ;
-----------------------------------------------------------------------------------------------
--- Which countries have risen in the rankings based on the number of comments between Dec 2019 vs Jan 2020? 
--- Hint: Avoid gaps between ranks when ranking countries.
--- MAX() FILTER() in select
--- JOIN USING
--- DATE_TRUNC(Precision, Column) -- Precision 'month', 'year', 'date', 'hour', etc
+-------------------------------------------------------------------------------------------------------------------
+-- 3.
+    -- Which countries have risen in the rankings based on the number of comments between Dec 2019 vs Jan 2020? 
+    -- Hint: Avoid gaps between ranks when ranking countries.
+-- Concepts used:
+    -- MAX() FILTER() in select
+    -- JOIN USING
+    -- DATE_TRUNC(Precision, Column) -- Precision 'month', 'year', 'date', 'hour', etc
 
 WITH ADS AS
 (
@@ -157,8 +163,10 @@ GROUP BY 1
 )
 SELECT country FROM PIVOTED WHERE ranks_20 < ranks_19
 ;
-----------------------------------------------------------------------------------------------
--- Write your PostgreSQL query statement below
+-------------------------------------------------------------------------------------------------------------------
+-- 4.
+    -- Find median for a column, given its frequency
+
 WITH EXPLODED AS
 (
 SELECT num, GENERATE_SERIES(1, frequency)
@@ -166,8 +174,9 @@ FROM Numbers
 )
 SELECT PERCENTILE_CONT(0.50) WITHIN GROUP (ORDER BY num) AS median
 FROM EXPLODED
-
-
+;
+-------------------------------------------------------------------------------------------------------------------
+-- 5.
 
 
 
