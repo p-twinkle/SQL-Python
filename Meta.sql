@@ -122,9 +122,41 @@ FROM STREAK_RANKED
 WHERE STREAK_RANK <= 3
 ;
 ----------------------------------------------------------------------------------------------
+-- Which countries have risen in the rankings based on the number of comments between Dec 2019 vs Jan 2020? 
+-- Hint: Avoid gaps between ranks when ranking countries.
+-- MAX() FILTER() in select
+-- JOIN USING
+-- DATE_TRUNC(Precision, Column) -- Precision 'month', 'year', 'date', 'hour', etc
 
-
-
+WITH ADS AS
+(
+SELECT
+u.country,
+date_trunc('month', created_at) AS month_start,
+SUM(c.number_of_comments) AS total_comments
+FROM fb_comments_count c
+JOIN fb_active_users  u USING (user_id)
+WHERE c.created_at between '2019-12-01' AND '2020-01-31'
+GROUP BY 1, 2
+)
+, RANKED AS
+(
+SELECT 
+country, month_start
+, DENSE_RANK() OVER(PARTITION BY month_start ORDER BY total_comments DESC) ranks
+FROM ADS
+)
+, PIVOTED AS
+(
+SELECT 
+country
+,MAX(ranks) FILTER(WHERE month_start = '2019-12-01') ranks_19
+,MAX(ranks) FILTER(WHERE month_start = '2020-01-01') ranks_20
+FROM RANKED
+GROUP BY 1
+)
+SELECT country FROM PIVOTED WHERE ranks_20 < ranks_19
+;
 
 
 
