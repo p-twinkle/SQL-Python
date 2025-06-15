@@ -267,9 +267,52 @@ FROM STREAK_RANKED
 WHERE streak_rank <= 3
 ;
 
-----------------------------------------------------------------------------------------------
+-- Version 2 : (Mine)
 
-
+WITH VISITS AS
+(
+SELECT DISTINCT * FROM USER_STREAKS WHERE date_visited <= '2022-08-10'
+)
+, STREAKS AS
+(
+SELECT user_id
+, date_visited
+, LAG(date_visited, 1) OVER(
+                            PARTITION BY user_id
+                            ORDER BY date_visited) PREV_DATE
+, CASE WHEN date_visited - LAG(date_visited, 1) OVER(
+                            PARTITION BY user_id
+                            ORDER BY date_visited) = 1 
+        THEN 0 
+        ELSE 1 END IS_NEW_STREAK
+FROM VISITS
+)
+, STREAK_IDENTIFIER AS 
+(
+SELECT 
+user_id, date_visited
+, SUM(IS_NEW_STREAK) OVER(
+                PARTITION BY user_id
+                ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+                ) STREAK_ID
+FROM STREAKS 
+)
+, STREAK_LENGTH AS
+(
+SELECT user_id, COUNT(*) STREAK_LEN
+FROM STREAK_IDENTIFIER
+GROUP BY user_id, streak_id
+)
+, STREAK_RANKED AS
+(
+SELECT user_id, STREAK_LEN
+,RANK() OVER(ORDER BY STREAK_LEN DESC) STREAK_RANK
+FROM STREAK_LENGTH
+)
+SELECT user_id, STREAK_LEN
+FROM STREAK_RANKED
+WHERE STREAK_RANK <= 3
+;
 
 
 
