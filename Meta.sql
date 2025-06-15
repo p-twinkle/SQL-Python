@@ -157,9 +157,15 @@ GROUP BY 1
 )
 SELECT country FROM PIVOTED WHERE ranks_20 < ranks_19
 ;
-
-
-
+----------------------------------------------------------------------------------------------
+-- Write your PostgreSQL query statement below
+WITH EXPLODED AS
+(
+SELECT num, GENERATE_SERIES(1, frequency)
+FROM Numbers
+)
+SELECT PERCENTILE_CONT(0.50) WITHIN GROUP (ORDER BY num) AS median
+FROM EXPLODED
 
 
 
