@@ -176,7 +176,112 @@ SELECT PERCENTILE_CONT(0.50) WITHIN GROUP (ORDER BY num) AS median
 FROM EXPLODED
 ;
 -------------------------------------------------------------------------------------------------------------------
--- 5.
+-- 5. Retention Rate
+-- You are given a dataset that tracks user activity. 
+-- The dataset includes information about the date of user activity, the account_id associated with the activity, 
+-- and the user_id of the user performing the activity. Each row in the dataset represents a user’s activity on a specific date 
+-- for a particular account_id.
+-- Your task is to calculate the monthly retention rate for users for each account_id for December 2020 and January 2021. 
+-- The retention rate is defined as the percentage of users active in a given month who have activity in any future month.
+
+-- For instance, a user is considered retained for December 2020 if they have activity in December 2020 and any subsequent month 
+-- (e.g., January 2021 or later). Similarly, a user is retained for January 2021 if they have activity in January 2021 and any
+-- later month (e.g., February 2021 or later).
+-- The final output should include the account_id and the ratio of the retention rate in January 2021 
+-- to the retention rate in December 2020 for each account_id. If there are no users retained in December 2020, 
+-- the retention rate ratio should be set to 0.
+
+-- Solution:
+WITH max_dates AS
+    (
+    SELECT user_id,
+          account_id,
+          MAX(record_date) AS max_date
+   FROM sf_events
+   GROUP BY user_id,
+            account_id
+    )
+
+, dec_2020 AS
+    (
+    SELECT DISTINCT account_id,
+                   user_id
+   FROM sf_events
+   WHERE date_trunc('month', record_date) = '2020-12-01'
+    )
+
+, jan_2021 AS
+    (
+    SELECT DISTINCT account_id,
+                   user_id
+   FROM sf_events
+   WHERE date_trunc('month', record_date) = '2021-01-01'
+    )
+    
+, retention_dec AS
+    (
+    SELECT d.account_id,
+          COUNT(DISTINCT CASE
+                             WHEN m.max_date > '2020-12-31' THEN d.user_id
+                         END) * 1.0 / COUNT(DISTINCT d.user_id) AS retention_dec
+   FROM dec_2020 d
+   JOIN max_dates m ON d.user_id = m.user_id
+   AND d.account_id = m.account_id
+   GROUP BY d.account_id
+    )
+
+, retention_jan AS
+    (
+    SELECT j.account_id,
+          COUNT(DISTINCT CASE
+                             WHEN m.max_date > '2021-01-31' THEN j.user_id
+                         END) * 1.0 / COUNT(DISTINCT j.user_id) AS retention_jan
+   FROM jan_2021 j
+   JOIN max_dates m ON j.user_id = m.user_id
+   AND j.account_id = m.account_id
+   GROUP BY j.account_id
+    )
+    
+SELECT rd.account_id,
+       COALESCE(rj.retention_jan, 0) / rd.retention_dec AS retention
+FROM retention_dec rd
+LEFT JOIN retention_jan rj ON rd.account_id = rj.account_id
+;
+
+-------------------------------------------------------------------------------------------------------------------
+-- Median : Retain both rows if count is even
+WITH CTE AS
+(
+    SELECT 
+    id, company, salary
+    ,ROW_NUMBER() OVER(PARTITION BY company ORDER BY salary) as row_rank
+    , COUNT(*) OVER(PARTITION BY company) as count_
+    FROM Employee
+)
+SELECT
+id, company, salary 
+FROM CTE 
+WHERE 
+-- Odd
+    (count_ % 2 = 1 AND row_rank = (count_+1)/2)
+-- Even
+OR  (count_ % 2 = 0 AND 
+                    (row_rank = count_ / 2 OR row_rank = (count_/2)+1)
+    )
+;
+-------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
