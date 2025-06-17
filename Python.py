@@ -316,8 +316,44 @@ num = 98368
 inst = Solution()
 inst.maximumSwap(num)
 
+# --------------------------------------------------------------------------------------------------------------
+# Valid Palindrome - II : Check if palindrome after removing exactly 1 character
 
+# O(n) solution 
+class Solution(object):
+    
+    def validPalindrome(self, s):
 
+        # Breakdown of Palindrome code
+        def is_pal(st):
+            l, r = 0, len(st)-1
+            while l <= r:
+                if st[l] != st[r]:
+                    return False
+                l += 1
+                r -= 1
+            return True
+
+        # Better way for Palindrome
+        def is_pal(st):
+            return st == st[::-1]
+
+        # Check at far ends, move inward
+        left, right = 0, len(s)-1
+
+        while left <= right:
+            if s[left] != s[right]:
+                return is_pal(s[:left]+s[left+1:]) or is_pal(s[:right]+s[right+1:])
+            left += 1
+            right -= 1
+
+        return True 
+
+s = "ccbbc"
+inst = Solution()
+inst.validPalindrome(s)
+
+# --------------------------------------------------------------------------------------------------------------
 
 
 
