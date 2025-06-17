@@ -287,8 +287,34 @@ def slow_function():
 
 slow_function()
 # --------------------------------------------------------------------------------------------------------------
+# Maximum Swap - One swap allowed 2376 --> 7326
+# for-else loop
 
+class Solution(object):
+    def maximumSwap(self, num):
+        h = {}
+        for i, v in enumerate(str(num)):
+            v = int(v)
+            h[v] = i
+        
+        digits = [int(i) for i in str(num)]
+        
+        for idx, digit in enumerate(digits):
+            for d in range(9, digit, -1):
+                if d in h and h[d] > idx:
+                    swap_idx = h[d]
+                    digits[swap_idx], digits[idx] = digits[idx], digits[swap_idx]
+                    break
+            else:
+                continue
+            break
+                    
+        op = ''.join(str(i) for i in digits)
+        return int(op)
 
+num = 98368
+inst = Solution()
+inst.maximumSwap(num)
 
 
 
