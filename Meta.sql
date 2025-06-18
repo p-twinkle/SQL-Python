@@ -270,8 +270,30 @@ OR  (count_ % 2 = 0 AND
     )
 ;
 -------------------------------------------------------------------------------------------------------------------
+-- 3-Day Streak using Lead, Lag
 
-
+WITH CTE AS
+(
+SELECT id, visit_date
+, LAG(people, 2) OVER (ORDER BY visit_date) p2
+, LAG(people, 1) OVER (ORDER BY visit_date) p1
+, people
+, LEAD(people, 1) OVER (ORDER BY visit_date) f1
+, LEAD(people, 2) OVER (ORDER BY visit_date) f2
+FROM Stadium
+)
+SELECT id, visit_date, people
+FROM CTE
+WHERE people >= 100
+AND 
+    (
+        (p2 >= 100) AND (p1 >= 100)
+    OR  (p1 >= 100) AND (f1 >= 100)
+    OR  (f1 >= 100) AND (f2 >= 100)
+    )
+ORDER BY 2
+;
+-------------------------------------------------------------------------------------------------------------------
 
 
 
