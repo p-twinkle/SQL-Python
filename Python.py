@@ -354,8 +354,24 @@ inst = Solution()
 inst.validPalindrome(s)
 
 # --------------------------------------------------------------------------------------------------------------
+# IP : s = 'abcdefghi', k = 3, fill = 'x' -----> OP: ['abc', 'def', 'ghi']
+# IP : s = 'abcdefghij', k = 3, fill = 'n' -----> OP: ['abc', 'def', 'ghi', 'jnn']
 
+class Solution(object):
+    def divideString(self, s, k, fill):
+        """
+        :type s: str
+        :type k: int
+        :type fill: str
+        :rtype: List[str]
+        """
+        if len(s) % k!=0:
+            app = ''.join(fill for i in range(k - len(s)%k))
+            s = s + app
+        return [s[i:i+k] for i in range(len(s)) if (i+k) % k == 0]
 
+ins = Solution()
+ins.divideString(s = 'abcdefghi', k = 3, fill = 'x')
 
 
 
