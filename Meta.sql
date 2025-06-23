@@ -294,10 +294,111 @@ AND
 ORDER BY 2
 ;
 -------------------------------------------------------------------------------------------------------------------
+/*
+Write a solution to find the total number of users and the total amount spent using the mobile only, the desktop only, 
+and both mobile and desktop together for each date.
 
+Spending table:
++---------+------------+----------+--------+
+| user_id | spend_date | platform | amount |
++---------+------------+----------+--------+
+| 1       | 2019-07-01 | mobile   | 100    |
+| 1       | 2019-07-01 | desktop  | 100    |
+| 2       | 2019-07-01 | mobile   | 100    |
+| 2       | 2019-07-02 | mobile   | 100    |
+| 3       | 2019-07-01 | desktop  | 100    |
+| 3       | 2019-07-02 | desktop  | 100    |
++---------+------------+----------+--------+
+Output: 
++------------+----------+--------------+-------------+
+| spend_date | platform | total_amount | total_users |
++------------+----------+--------------+-------------+
+| 2019-07-01 | desktop  | 100          | 1           |
+| 2019-07-01 | mobile   | 100          | 1           |
+| 2019-07-01 | both     | 200          | 1           |
+| 2019-07-02 | desktop  | 100          | 1           |
+| 2019-07-02 | mobile   | 100          | 1           |
+| 2019-07-02 | both     | 0            | 0           |
++------------+----------+--------------+-------------+ 
+*/
 
-
-
+WITH both_us AS
+(
+SELECT user_id, spend_date
+FROM Spending 
+GROUP BY 1,2
+HAVING COUNT(DISTINCT platform) > 1
+)
+    
+, mob AS
+(
+SELECT m.spend_date, m.platform, m.amount, m.user_id
+FROM (SELECT * FROM Spending WHERE platform = 'mobile') m
+LEFT JOIN both_us b 
+on m.user_id = b.user_id
+AND m.spend_date = b.spend_date
+WHERE b.user_id IS NULL
+)
+    
+, desk AS
+(
+SELECT d.spend_date, d.platform, d.amount, d.user_id
+FROM (SELECT * FROM Spending WHERE platform = 'desktop') d
+LEFT JOIN both_us b 
+on d.user_id = b.user_id
+AND d.spend_date = b.spend_date
+WHERE b.user_id IS NULL
+)
+    
+, multi AS 
+(
+SELECT b.spend_date, 'both' platform, SUM(s.amount) AS amount, b.user_id
+FROM both_us b
+JOIN Spending s
+ON s.user_id = b.user_id
+AND s.spend_date = b.spend_date
+GROUP BY 4,1
+)
+    
+, ALL_us AS
+(
+SELECT * FROM multi
+UNION ALL
+SELECT * FROM mob
+UNION ALL
+SELECT * FROM desk
+)
+    
+, CALC AS
+(
+SELECT spend_date, platform
+, SUM(amount) total_amount
+, COUNT(DISTINCT user_id) total_users
+FROM ALL_us
+GROUP BY 1,2
+ORDER BY 3,2,1
+)
+    
+, ALL_COMBO AS
+(
+SELECT DISTINCT spend_date, plat platform
+FROM Spending CROSS JOIN (SELECT 'both' as plat)
+UNION ALL 
+SELECT DISTINCT spend_date, plat  
+FROM Spending CROSS JOIN (SELECT 'mobile' as plat)
+UNION ALL 
+SELECT DISTINCT spend_date, plat  
+FROM Spending CROSS JOIN (SELECT 'desktop' as plat)
+)
+    
+SELECT a.*
+, COALESCE(total_amount, 0) total_amount
+, COALESCE(total_users, 0) total_users
+FROM ALL_COMBO a
+LEFT JOIN CALC c
+USING(spend_date, platform)
+ORDER BY 3,2,1
+;
 
 
 
