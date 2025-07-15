@@ -13,7 +13,7 @@ SELECT * FROM cte_name;
 
 ---
 
-## 🔁 What is a **Recursive CTE**?
+## What is a **Recursive CTE**?
 
 A **recursive CTE** is a CTE that **refers to itself** to solve hierarchical or repetitive problems — like organization trees, file systems, or number generation.
 
@@ -24,7 +24,7 @@ It has **two parts**:
 
 ---
 
-## 🔁 Syntax of Recursive CTE
+## Syntax of Recursive CTE
 
 ```sql
 WITH RECURSIVE cte_name AS (
@@ -44,7 +44,7 @@ SELECT * FROM cte_name;
 
 ---
 
-## 🧮 Example 1: Generate Numbers from 1 to 5
+## Example 1: Generate Numbers from 1 to 5
 
 ```sql
 WITH RECURSIVE numbers AS (
@@ -71,7 +71,7 @@ SELECT * FROM numbers;
 
 ---
 
-## 🧭 Example 2: Employee Hierarchy
+## Example 2: Employee Hierarchy
 
 ### Table: `employees`
 
@@ -114,7 +114,7 @@ SELECT * FROM org_chart;
 
 ---
 
-## 📌 Summary
+## Summary
 
 | Part           | Role                                    |
 | -------------- | --------------------------------------- |
@@ -124,6 +124,3 @@ SELECT * FROM org_chart;
 | `level` column | Helps track depth in the hierarchy      |
 | Stop condition | `WHERE` clause to prevent infinite loop |
 
----
-
-Would you like to try a hands-on example with your own data? Or explore performance tips and limitations?
