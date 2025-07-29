@@ -207,9 +207,86 @@ FULL JOIN daily_pay dp
 ON ad.user_id = dp.user_id 
 ORDER BY COALESCE(ad.user_id, dp.user_id)
 ;
+----------------------------------------------------------------------------------------------
+/*
+Input: 
+Failed table:
++-------------------+
+| fail_date         |
++-------------------+
+| 2018-12-28        |
+| 2018-12-29        |
+| 2019-01-04        |
+| 2019-01-05        |
++-------------------+
+Succeeded table:
++-------------------+
+| success_date      |
++-------------------+
+| 2018-12-30        |
+| 2018-12-31        |
+| 2019-01-01        |
+| 2019-01-02        |
+| 2019-01-03        |
+| 2019-01-06        |
++-------------------+
+Output: 
++--------------+--------------+--------------+
+| period_state | start_date   | end_date     |
++--------------+--------------+--------------+
+| succeeded    | 2019-01-01   | 2019-01-03   |
+| failed       | 2019-01-04   | 2019-01-05   |
+| succeeded    | 2019-01-06   | 2019-01-06   |
++--------------+--------------+--------------+
+*/
 
+WITH MERGED AS
+(
+    SELECT success_date date, 'succeeded' period_state FROM succeeded
+    UNION ALL
+    SELECT fail_date date, 'failed' period_state FROM Failed
+)
+, FILT AS
+(
+    SELECT * FROM MERGED 
+    WHERE date BETWEEN '2019-01-01' AND '2019-12-31'
+    ORDER BY date
+)
+, STREAK_FLAG AS
+(
+    SELECT 
+        F1.*
+        , CASE WHEN (F1.period_state != F2.period_state) 
+                AND F2.period_state IS NOT NULL 
+                THEN 1 ELSE 0 END FLAG
+    FROM FILT F1 
+    LEFT JOIN FILT F2
+    ON F1.date = F2.date + 1
+)
+/*
+Can use LAG function instead of join, this is more optimized
+, STREAK_FLAG AS
+(
+    SELECT 
+        *
+        , CASE WHEN LAG(period_state) OVER(ORDER BY date) = period_state
+                AND LAG(date) OVER(ORDER BY date) = date - 1
+                THEN 0 ELSE 1 END FLAG
+    FROM FILT 
+)
+*/
+, STREAK_ID AS
+(
+    SELECT date, period_state
+    , SUM(flag) OVER (ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) STR_ID
+    FROM STREAK_FLAG
+)
+SELECT period_state, MIN(date) start_date, MAX(date) end_date
+FROM STREAK_ID
+GROUP BY STR_ID, period_state
+ORDER BY MIN(date) 
 
-
+----------------------------------------------------------------------------------------------
 
 
 
