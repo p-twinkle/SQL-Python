@@ -373,8 +373,24 @@ class Solution(object):
 ins = Solution()
 ins.divideString(s = 'abcdefghi', k = 3, fill = 'x')
 
+# --------------------------------------------------------------------------------------------------------------
 
+## Find if the transformed substring is present in superstring or not.
+superstring = "l3e7codesuperstring" 
+sub = "leet" 
+mapping = [['e','3'],['t','7']]
 
+dict_map = dict(mapping)
+
+op = ''
+for c in sub:
+    if c in dict_map:
+        op += dict_map[c]
+        dict_map.pop(c)
+    else:
+        op += c
+print(op)
+print(op in superstring)
 
 
 
